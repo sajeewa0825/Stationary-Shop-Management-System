@@ -289,16 +289,41 @@ void Buy(){
 }
 
 void calculaterBill(){
-    FILE *file,*file1;
-    struct tempbuy tb;
+    FILE *file,*file1,*file2;
+    int total=0,itemfullprice,n;
+    struct tempbuy *structtempbuy;
+
     file= fopen("itemdata.dat","r");
     file1= fopen("tempbuy.dat","r");
+    file2= fopen("tempbuy.dat","r");
+
+    if(file2==NULL){
+        printf("open fail\n");
+    } else{
+        fseek(file2,0,SEEK_END);
+        n= ftell(file2)/ sizeof(structtempbuy);
+        printf("Record is %d\n",n);
+    }
+    fclose(file2);
+
+    struct tempbuy tb;
+    struct items s;
+
     if(file==NULL &&  file1 == NULL){
         printf("open fail\n");
     } else{
+        printf("ItemNumber\t\tName\t\tPrice\t\tquantity\t\tfull price");
         while (fread(&tb,sizeof (tb),1,file1)){
-            printf("\n%d\t\t\t%d",tb.quantity,tb.itemNumber);
+            for (int i = 0; i < n; ++i) {
+                fread(&s,sizeof (s),1,file);
+                if(tb.itemNumber == s.itemNumber){
+                    itemfullprice=tb.quantity*s.itemsPrice;
+                    total=total+itemfullprice;
+                    printf("\n%d\t\t\t%s\t\t\t%d\t\t\t%d\t\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,tb.quantity,itemfullprice);
+                }
+            }
         }
+        printf("\nYour bill is %d",total);
         printf("\n");
         fclose(file);
         fclose(file1);
