@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 void addItems();
 void readItemdata();
 void searchItem();
@@ -8,6 +9,9 @@ void updateItem();
 void deleteItem();
 void Buy();
 void calculaterBill();
+void updatequntity(int number, int quntity );
+void billCreater(int number,int qun);
+void displaybilldata();
 
 struct items{
     char itemName[20];
@@ -18,9 +22,10 @@ struct items{
 
 struct buy{
     char itemName[20];
-    int quantity;
-    int itemsPrice;
     int itemNumber;
+    int itemsPrice;
+    int quantity;
+    int itembill;
 };
 
 struct tempbuy{
@@ -28,9 +33,12 @@ struct tempbuy{
     int itemNumber;
 };
 
+int totalBill=0;
+
 int main() {
 
     int n;
+    printf("\n");
     printf("0. add items \n");
     printf("3. append items \n");
     printf("1. disply full items \n");
@@ -39,6 +47,7 @@ int main() {
     printf("5. delete items \n");
     printf("6. update items \n");
     printf("7. buy items \n");
+    printf("8. display bill \n");
     scanf("%d",&n);
     if(n==0){
         addItems();
@@ -56,6 +65,8 @@ int main() {
         deleteItem();
     }else if(n==7){
         Buy();
+    }else if(n==8){
+        displaybilldata();
     }
     return 0;
 }
@@ -289,21 +300,99 @@ void Buy(){
 }
 
 void calculaterBill(){
-    FILE *file,*file1;
+    FILE *file;
     struct tempbuy tb;
+    file= fopen("tempbuy.dat","r");
+    printf("ItemNumber\t\tName\t\tPrice\t\tquantity\t\tfullprice");
+    while (fread(&tb,sizeof (tb),1,file)){
+        billCreater(tb.itemNumber,tb.quantity);
+    }
+
+    printf("\nyour total Bill is Rs. %d\n",totalBill);
+    fclose(file);
+}
+
+void billCreater(int number,int qun){
+    FILE *file,*file1;
+    struct items s;
+    struct buy by;
+    int found=0,bill;
     file= fopen("itemdata.dat","r");
-    file1= fopen("tempbuy.dat","r");
-    if(file==NULL &&  file1 == NULL){
+    file1= fopen("billdata.dat","a");
+    if(file==NULL){
         printf("open fail\n");
     } else{
-        while (fread(&tb,sizeof (tb),1,file1)){
-            printf("\n%d\t\t\t%d",tb.quantity,tb.itemNumber);
+        while (fread(&s,sizeof (s),1,file)){
+            if(s.itemNumber == number){
+                bill=qun*s.itemsPrice;
+                totalBill=totalBill+bill;
+                found=1;
+                printf("\n%s\t\t\t%d\t\t\t%d\t\t\t%d\t\t\t%d",s.itemName,s.itemNumber,s.itemsPrice,qun,bill);
+                updatequntity(s.itemNumber, qun);
+                strncpy(by.itemName, s.itemName, 20);
+                by.itemNumber = s.itemNumber;
+                by.quantity = qun;
+                by.itemsPrice = s.itemsPrice;
+                by.itembill=bill;
+                fwrite( &by,sizeof(by),1,file1);
+            }
         }
-        printf("\n");
+        if(found==0){
+            printf("\nNot found items");
+        }
+    }
+    fclose(file);
+    fclose(file1);
+}
+
+void updatequntity(int number, int quntity ){
+    FILE *file,*file1;
+    struct items s;
+    int found=0;
+    file= fopen("itemdata.dat","r");
+    file1= fopen("temp.dat","w");
+    if(file==NULL){
+        printf("open fail\n");
+    } else{
+        while (fread(&s,sizeof (s),1,file)){
+            if(s.itemNumber == number){
+                found=1;
+                s.quantity=s.quantity-quntity;
+            }
+            fwrite( &s,sizeof(s),1,file1 );
+        }
         fclose(file);
         fclose(file1);
+        if(found==0){
+            printf("\nNot found items and not Update");
+        } else{
+            file1= fopen("temp.dat","r");
+            file= fopen("itemdata.dat","w");
 
+            while (fread(&s,sizeof (s),1,file1)){
+                fwrite( &s,sizeof(s),1,file );
+            }
+
+            fclose(file);
+            fclose(file1);
+        }
     }
+}
+
+void displaybilldata(){
+    FILE *file;
+    struct buy s;
+    file= fopen("billdata.dat","r");
+    if(file==NULL){
+        printf("open fail\n");
+    } else{
+        printf("ItemNumber\t\tName\t\tPrice\t\tquantity\t\tbill");
+        while (fread(&s,sizeof (s),1,file)){
+            printf("\n%d\t\t\t%s\t\t\t%d\t\t\t%d\t\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity,s.itembill);
+        }
+    }
+    fclose(file);
     main();
 }
+
 
