@@ -8,6 +8,7 @@ void updateItem();
 void deleteItem();
 void Buy();
 void calculaterBill();
+void updatequntity();
 
 struct items{
     char itemName[20];
@@ -330,5 +331,46 @@ void calculaterBill(){
 
     }
     main();
+}
+
+void updatequntity(){
+    FILE *file,*file1;
+    struct items s;
+    int iNumber,found=0;
+    file= fopen("itemdata.dat","r");
+    file1= fopen("temp.dat","w");
+    if(file==NULL){
+        printf("open fail\n");
+    } else{
+        printf("Enter Update item number:");
+        scanf("%d",&iNumber);
+        while (fread(&s,sizeof (s),1,file)){
+            if(s.itemNumber == iNumber){
+                found=1;
+                printf("Enter item name:");
+                scanf(" %s",&s.itemName);
+                printf("Enter item price:");
+                scanf(" %d",&s.itemsPrice);
+                printf("Enter item quantity:");
+                scanf(" %d",&s.quantity);
+            }
+            fwrite( &s,sizeof(s),1,file1 );
+        }
+        fclose(file);
+        fclose(file1);
+        if(found==0){
+            printf("\nNot found items");
+        } else{
+            file1= fopen("temp.dat","r");
+            file= fopen("itemdata.dat","w");
+
+            while (fread(&s,sizeof (s),1,file1)){
+                fwrite( &s,sizeof(s),1,file );
+            }
+
+            fclose(file);
+            fclose(file1);
+        }
+    }
 }
 
