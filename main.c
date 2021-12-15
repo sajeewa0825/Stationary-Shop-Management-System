@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 void addItems();
 void readItemdata();
 void searchItem();
@@ -8,7 +9,9 @@ void updateItem();
 void deleteItem();
 void Buy();
 void calculaterBill();
-void updatequntity();
+void updatequntity(int number, int quntity );
+void billCreater(int number,int qun);
+void displaybilldata();
 
 struct items{
     char itemName[20];
@@ -19,9 +22,10 @@ struct items{
 
 struct buy{
     char itemName[20];
-    int quantity;
-    int itemsPrice;
     int itemNumber;
+    int itemsPrice;
+    int quantity;
+    int itembill;
 };
 
 struct tempbuy{
@@ -29,9 +33,12 @@ struct tempbuy{
     int itemNumber;
 };
 
+int totalBill=0;
+
 int main() {
 
     int n;
+    printf("\n");
     printf("0. add items \n");
     printf("3. append items \n");
     printf("1. disply full items \n");
@@ -40,6 +47,7 @@ int main() {
     printf("5. delete items \n");
     printf("6. update items \n");
     printf("7. buy items \n");
+    printf("8. display bill \n");
     scanf("%d",&n);
     if(n==0){
         addItems();
@@ -57,6 +65,8 @@ int main() {
         deleteItem();
     }else if(n==7){
         Buy();
+    }else if(n==8){
+        displaybilldata();
     }
     return 0;
 }
@@ -290,76 +300,71 @@ void Buy(){
 }
 
 void calculaterBill(){
-    FILE *file,*file1,*file2;
-    int total=0,itemfullprice,n;
-    struct tempbuy *structtempbuy;
-
-    file= fopen("itemdata.dat","r");
-    file1= fopen("tempbuy.dat","r");
-    file2= fopen("tempbuy.dat","r");
-
-    if(file2==NULL){
-        printf("open fail\n");
-    } else{
-        fseek(file2,0,SEEK_END);
-        n= ftell(file2)/ sizeof(structtempbuy);
-        printf("Record is %d\n",n);
-    }
-    fclose(file2);
-
+    FILE *file;
     struct tempbuy tb;
-    struct items s;
-
-    if(file==NULL &&  file1 == NULL){
-        printf("open fail\n");
-    } else{
-        printf("ItemNumber\t\tName\t\tPrice\t\tquantity\t\tfull price");
-        while (fread(&tb,sizeof (tb),1,file1)){
-            for (int i = 0; i < n; ++i) {
-                fread(&s,sizeof (s),1,file);
-                if(tb.itemNumber == s.itemNumber){
-                    itemfullprice=tb.quantity*s.itemsPrice;
-                    total=total+itemfullprice;
-                    printf("\n%d\t\t\t%s\t\t\t%d\t\t\t%d\t\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,tb.quantity,itemfullprice);
-                }
-            }
-        }
-        printf("\nYour bill is %d",total);
-        printf("\n");
-        fclose(file);
-        fclose(file1);
-
+    file= fopen("tempbuy.dat","r");
+    printf("ItemNumber\t\tName\t\tPrice\t\tquantity\t\tfullprice");
+    while (fread(&tb,sizeof (tb),1,file)){
+        billCreater(tb.itemNumber,tb.quantity);
     }
-    main();
+
+    printf("\nyour total Bill is Rs. %d\n",totalBill);
+    fclose(file);
 }
 
-void updatequntity(){
+void billCreater(int number,int qun){
     FILE *file,*file1;
     struct items s;
-    int iNumber,found=0;
+    struct buy by;
+    int found=0,bill;
+    file= fopen("itemdata.dat","r");
+    file1= fopen("billdata.dat","a");
+    if(file==NULL){
+        printf("open fail\n");
+    } else{
+        while (fread(&s,sizeof (s),1,file)){
+            if(s.itemNumber == number){
+                bill=qun*s.itemsPrice;
+                totalBill=totalBill+bill;
+                found=1;
+                printf("\n%s\t\t\t%d\t\t\t%d\t\t\t%d\t\t\t%d",s.itemName,s.itemNumber,s.itemsPrice,qun,bill);
+                updatequntity(s.itemNumber, qun);
+                strncpy(by.itemName, s.itemName, 20);
+                by.itemNumber = s.itemNumber;
+                by.quantity = qun;
+                by.itemsPrice = s.itemsPrice;
+                by.itembill=bill;
+                fwrite( &by,sizeof(by),1,file1);
+            }
+        }
+        if(found==0){
+            printf("\nNot found items");
+        }
+    }
+    fclose(file);
+    fclose(file1);
+}
+
+void updatequntity(int number, int quntity ){
+    FILE *file,*file1;
+    struct items s;
+    int found=0;
     file= fopen("itemdata.dat","r");
     file1= fopen("temp.dat","w");
     if(file==NULL){
         printf("open fail\n");
     } else{
-        printf("Enter Update item number:");
-        scanf("%d",&iNumber);
         while (fread(&s,sizeof (s),1,file)){
-            if(s.itemNumber == iNumber){
+            if(s.itemNumber == number){
                 found=1;
-                printf("Enter item name:");
-                scanf(" %s",&s.itemName);
-                printf("Enter item price:");
-                scanf(" %d",&s.itemsPrice);
-                printf("Enter item quantity:");
-                scanf(" %d",&s.quantity);
+                s.quantity=s.quantity-quntity;
             }
             fwrite( &s,sizeof(s),1,file1 );
         }
         fclose(file);
         fclose(file1);
         if(found==0){
-            printf("\nNot found items");
+            printf("\nNot found items and not Update");
         } else{
             file1= fopen("temp.dat","r");
             file= fopen("itemdata.dat","w");
@@ -373,4 +378,21 @@ void updatequntity(){
         }
     }
 }
+
+void displaybilldata(){
+    FILE *file;
+    struct buy s;
+    file= fopen("billdata.dat","r");
+    if(file==NULL){
+        printf("open fail\n");
+    } else{
+        printf("ItemNumber\t\tName\t\tPrice\t\tquantity\t\tbill");
+        while (fread(&s,sizeof (s),1,file)){
+            printf("\n%d\t\t\t%s\t\t\t%d\t\t\t%d\t\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity,s.itembill);
+        }
+    }
+    fclose(file);
+    main();
+}
+
 
