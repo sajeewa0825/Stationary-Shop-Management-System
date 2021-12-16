@@ -329,10 +329,10 @@ void Buy(){
                 if(check2 == 1){
                     fwrite( &tb,sizeof(tb),1,file1);
                 } else if(check2 == 2){
-                    printf("--- Item Stock is zero ---\n");
+                    printf("--- This item out of stock---\n\n");
                     goto Loop;
                 } else{
-                    printf("--- Your Request quantity Not available ! Try again---\n");
+                    printf("--- Your Request quantity Not available ! Try again---\n\n");
                     goto Loop1;
                 }
                 Loop3:  printf("\nClose enter 0\n" "continue enter 1\n");
@@ -380,11 +380,12 @@ void calculaterBill(){
     FILE *file;
     struct tempbuy tb;
     file= fopen("tempbuy.dat","r");
+    printf("\n--------------------------------------------------------------------\n");
     printf("ItemNumber\t\tName\t\tPrice\t\tquantity\t\tfullprice");
     while (fread(&tb,sizeof (tb),1,file)){
         billCreater(tb.itemNumber,tb.quantity);
     }
-
+    printf("\n--------------------------------------------------------------------\n");
     printf("\nyour total Bill is Rs. %d\n",totalBill);
     fclose(file);
 }
