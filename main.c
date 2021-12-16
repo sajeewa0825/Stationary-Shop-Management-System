@@ -12,6 +12,8 @@ void calculaterBill();
 void updatequntity(int number, int quntity );
 void billCreater(int number,int qun);
 void displaybilldata();
+int itemsIdChecker(int id);
+int checkItemQuantity(int id, int qun);
 
 struct items{
     char itemName[20];
@@ -109,24 +111,50 @@ void appendItems(){
     if(file==NULL){
         printf("open fail\n");
     } else{
-        printf("How much item you add:");
+        printf("--------------------------------------------------------------------\n");
+        printf("\nHow much item you add:");
         scanf("%d",&number);
         for (int i=0;i<number;++i){
-            printf("Enter item number:");
+            LOOP: printf("Enter item number:");
             scanf(" %d",&structitems.itemNumber);
-            printf("Enter item name:");
-            scanf(" %s",&structitems.itemName);
-            printf("Enter item price:");
-            scanf(" %d",&structitems.itemsPrice);
-            printf("Enter item quantity:");
-            scanf(" %d",&structitems.quantity);
-            fwrite( &structitems,sizeof(structitems),1,file );
+            int check =itemsIdChecker(structitems.itemNumber);
+            if(check == 0){
+                printf("Enter item name:");
+                scanf(" %s",&structitems.itemName);
+                printf("Enter item price:");
+                scanf(" %d",&structitems.itemsPrice);
+                printf("Enter item quantity:");
+                scanf(" %d",&structitems.quantity);
+                fwrite( &structitems,sizeof(structitems),1,file );
+                printf("\n-----Data Add successfully-----\n");
+            } else{
+                printf("\n---Items number Already used please add other number and try again--\n\n");
+                goto LOOP;
+            }
         }
 
     }
 
     fclose(file);
     main();
+}
+
+int itemsIdChecker(int id){
+    FILE *file;
+    struct items s;
+    int found=0;
+    file= fopen("itemdata.dat","r");
+    if(file==NULL){
+        printf("open fail\n");
+    } else{
+        while (fread(&s,sizeof (s),1,file)){
+            if(s.itemNumber == id){
+                found = 1;
+            }
+        }
+    }
+    fclose(file);
+    return found;
 }
 
 void readItemdata(){
@@ -136,10 +164,13 @@ void readItemdata(){
     if(file==NULL){
         printf("open fail\n");
     } else{
-        printf("ItemNumber\t\tName\t\tPrice\t\tquantity");
+        printf("--------------------------------------------------------------------\n");
+        printf("ItemNumber\t\tName\t\tPrice\t\tquantity\n");
+        printf("--------------------------------------------------------------------");
         while (fread(&s,sizeof (s),1,file)){
-            printf("\n%d\t\t\t%s\t\t\t%d\t\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity);
+            printf("\n%d\t\t\t%s\t\t%d\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity);
         }
+        printf("\n--------------------------------------------------------------------\n");
     }
     fclose(file);
     main();
@@ -155,15 +186,18 @@ void searchItem(){
     } else{
         printf("Enter item number:");
         scanf("%d",&iNumber);
+        printf("\n--------------------------------------------------------------------\n");
+        printf("ItemNumber\t\tName\t\tPrice\t\tquantity\n");
+        printf("--------------------------------------------------------------------");
         while (fread(&s,sizeof (s),1,file)){
             if(s.itemNumber == iNumber){
-                printf("ItemNumber\t\tName\t\tPrice\t\tquantity");
                 found=1;
-                printf("\n%s\t\t\t%d\t\t\t%d\t\t\t%d",s.itemName,s.itemNumber,s.itemsPrice,s.quantity);
+                printf("\n%d\t\t\t%s\t\t%d\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity);
             }
         }
+        printf("\n--------------------------------------------------------------------\n");
         if(found==0){
-            printf("\nNot found items");
+            printf("\n--- Not found items ! ---");
         }
     }
     fclose(file);
@@ -237,6 +271,7 @@ void deleteItem(){
     if(file==NULL){
         printf("open fail\n");
     } else{
+        printf("\n--------------------------------------------------------------------\n");
         printf("Enter delete item number:");
         scanf("%d",&iNumber);
         while (fread(&s,sizeof (s),1,file)){
@@ -249,7 +284,7 @@ void deleteItem(){
         fclose(file);
         fclose(file1);
         if(found==0){
-            printf("\nNot found items");
+            printf("\n--- Not found item !---\n");
         } else{
             file1= fopen("temp.dat","r");
             file= fopen("itemdata.dat","w");
@@ -257,7 +292,7 @@ void deleteItem(){
             while (fread(&s,sizeof (s),1,file1)){
                 fwrite( &s,sizeof(s),1,file );
             }
-
+            printf("\n---Item Delete successful---\n");
             fclose(file);
             fclose(file1);
         }
@@ -275,28 +310,70 @@ void Buy(){
     if(file==NULL &&  file1 == NULL){
         printf("open fail\n");
     } else{
-        printf("ItemNumber\t\tName\t\tPrice\t\tquantity");
+        printf("\n--------------------------------------------------------------------\n");
+        printf("ItemNumber\t\tName\t\tPrice\t\tquantity\n");
+        printf("--------------------------------------------------------------------");
         while (fread(&s,sizeof (s),1,file)){
-            printf("\n%d\t\t\t%s\t\t\t%d\t\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity);
+            printf("\n%d\t\t\t%s\t\t%d\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity);
         }
         fclose(file);
-        printf("\n=========================\n");
+        printf("\n--------------------------------------------------------------------\n");
         do {
-            printf("Enter item number \n");
+            Loop:  printf("Enter item number \n");
             scanf("%d",&tb.itemNumber);
-            printf("Enter item quantity \n");
-            scanf("%d",&tb.quantity);
-            fwrite( &tb,sizeof(tb),1,file1);
-            printf("close enter 0\n"
-                   "contune enter 1  \n");
-            scanf("%d",&check);
-            printf("\n=========================\n");
+            int check1 =itemsIdChecker(tb.itemNumber);
+            if (check1 == 1){
+                Loop1: printf("Enter item quantity \n");
+                scanf("%d",&tb.quantity);
+                int check2 = checkItemQuantity(tb.itemNumber,tb.quantity);
+                if(check2 == 1){
+                    fwrite( &tb,sizeof(tb),1,file1);
+                } else if(check2 == 2){
+                    printf("--- Item Stock is zero ---\n");
+                    goto Loop;
+                } else{
+                    printf("--- Your Request quantity Not available ! Try again---\n");
+                    goto Loop1;
+                }
+                Loop3:  printf("\nClose enter 0\n" "continue enter 1\n");
+                scanf("%d",&check);
+                if(check != 0 && check !=1 ){
+                    goto Loop3;
+                }
+            } else{
+                printf("\n--- Wrong item number try again ---\n\n");
+                goto Loop;
+            }
         } while (check==1);
         fclose(file1);
 
     }
     calculaterBill();
     main();
+}
+
+int checkItemQuantity(int id, int qun){
+    FILE *file;
+    struct items s;
+    int check=0;
+    file= fopen("itemdata.dat","r");
+    if(file==NULL){
+        printf("open fail\n");
+    } else{
+        while (fread(&s,sizeof (s),1,file)){
+            if(s.itemNumber == id){
+                if(s.quantity == 0){
+                    check = 2;
+                } else{
+                    if(s.quantity >= qun ){
+                        check= 1;
+                    }
+                }
+            }
+        }
+    }
+    fclose(file);
+    return check;
 }
 
 void calculaterBill(){
