@@ -189,14 +189,14 @@ void readItemdata(){
         printf("ItemNumber\t\tName\t\tPrice\t\tquantity\n");
         printf("--------------------------------------------------------------------");
         while (fread(&s,sizeof (s),1,file)){
-<<<<<<< HEAD
+
             printf("\n%d\t\t%s\t\t%d\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity);
-=======
+
             printf("\n%d\t\t\t%s\t\t%d\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity);
             items=items+1;
             qunticount=qunticount+s.quantity;
             pri=pri+(s.itemsPrice*s.quantity);
->>>>>>> bill
+
         }
         printf("\n--------------------------------------------------------------------\n");
         printf("Total items %d\n",items);
@@ -224,11 +224,11 @@ void searchItem(){
         while (fread(&s,sizeof (s),1,file)){
             if(s.itemNumber == iNumber){
                 found=1;
-<<<<<<< HEAD
+
                 printf("\n%s\t\t\t%d\t\t%d\t\t%d",s.itemName,s.itemNumber,s.itemsPrice,s.quantity);
-=======
+
                 printf("\n%d\t\t\t%s\t\t%d\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity);
->>>>>>> bill
+
             }
         }
         printf("\n--------------------------------------------------------------------\n");
@@ -336,11 +336,8 @@ void Buy(){
         printf("ItemNumber\t\tName\t\tPrice\t\tquantity\n");
         printf("--------------------------------------------------------------------");
         while (fread(&s,sizeof (s),1,file)){
-<<<<<<< HEAD
             printf("\n%d\t\t%s\t\t%d\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity);
-=======
             printf("\n%d\t\t\t%s\t\t%d\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity);
->>>>>>> bill
         }
         fclose(file);
         printf("\n--------------------------------------------------------------------\n");
@@ -442,11 +439,8 @@ void billCreater(int number,int qun){
                 bill=qun*s.itemsPrice;
                 totalBill=totalBill+bill;
                 found=1;
-<<<<<<< HEAD
                 printf("\n%s\t\t\t%d\t\t%d\t\t%d\t\t%d",s.itemName,s.itemNumber,s.itemsPrice,qun,bill);
-=======
                 printf("\n%s\t\t\t%d\t\t%d\t\t%d\t\t\t%d",s.itemName,s.itemNumber,s.itemsPrice,qun,bill);
->>>>>>> bill
                 updatequntity(s.itemNumber, qun);
                 strncpy(by.itemName, s.itemName, 20);
                 by.itemNumber = s.itemNumber;
@@ -504,16 +498,13 @@ void updatequntity(int number, int quntity ){
 void displaybilldata(){
     FILE *file;
     struct buy s;
-<<<<<<< HEAD
     int sellingprice;
-=======
     int TotalSelling=0,daySelling=0;
 
     time_t t;
     t = time(NULL);
     struct tm tm = *localtime(&t);
 
->>>>>>> bill
     file= fopen("billdata.dat","r");
     if(file==NULL){
         printf("open fail\n");
@@ -523,17 +514,15 @@ void displaybilldata(){
         printf("ItemNumber\t\tName\t\tPrice\t\tQuantity\tAmount\t\tDate");
         printf("\n-------------------------------------------------------------------------------------------------------");
         while (fread(&s,sizeof (s),1,file)){
-<<<<<<< HEAD
             printf("\n%d\t\t\t%s\t\t%d\t\t%d\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity,s.itembill);
             sellingprice=sellingprice+s.itembill;
-=======
+
             printf("\n%d\t\t\t%s\t\t%d\t\t%d\t\t%d\t\t%d-%d-%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity,s.itembill,s.date,s.month,s.year);
             TotalSelling=TotalSelling+s.itembill;
             if(s.date == tm.tm_mday && s.month == tm.tm_mon+1 && s.year == tm.tm_year+1900){
                 daySelling=daySelling + s.itembill;
             }
 
->>>>>>> bill
         }
         printf("\n-------------------------------------------------------------------------------------------------------\n");
         printf("Total Selling Rs. %d",TotalSelling);
@@ -541,9 +530,7 @@ void displaybilldata(){
         printf("Today's Selling Rs. %d",daySelling);
         printf("\n-------------------------------------------------------------------------------------------------------\n");
     }
-    printf("\n------------------------------------------");
-    printf("\n Total selling price %d \n",sellingprice);
-    printf("------------------------------------------");
+
     fclose(file);
     main();
 }
