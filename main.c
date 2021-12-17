@@ -3,6 +3,7 @@
 #include<conio.h>
 #include<time.h>
 
+//declare functions
 void addItems();
 void readItemdata();
 void searchItem();
@@ -17,6 +18,7 @@ void displaybilldata();
 int itemsIdChecker(int id);
 int checkItemQuantity(int id, int qun);
 
+//items data store struct
 struct items{
     char itemName[20];
     int quantity;
@@ -24,6 +26,7 @@ struct items{
     int itemNumber;
 };
 
+//buy items data store struct
 struct buy{
     char itemName[20];
     int itemNumber;
@@ -35,13 +38,19 @@ struct buy{
     int year;
 };
 
+//temporarily buy id and quantity store struct
 struct tempbuy{
     int quantity;
     int itemNumber;
 };
 
+// total bill price store, Global variables
 int totalBill=0;
 
+
+/**
+ * main menu and selections functions
+ * */
 int main() {
     int n;
     printf("\n\n");
@@ -93,6 +102,11 @@ int main() {
     return 0;
 }
 
+
+/**
+ * add items for database
+ * all delete and write
+ * */
 void addItems(){
     FILE *file;
     int number = 0;
@@ -122,6 +136,10 @@ void addItems(){
     main();
 }
 
+/**
+ * add items for database
+ * append mode
+ * */
 void appendItems(){
     FILE *file;
     int number = 0;
@@ -159,6 +177,12 @@ void appendItems(){
     main();
 }
 
+/**
+ * check the items number already store or not
+ * if items found return 1
+ * if items not found return 0
+ * used itemdata.bat file
+ * */
 int itemsIdChecker(int id){
     FILE *file;
     struct items s;
