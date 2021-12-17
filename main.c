@@ -57,7 +57,7 @@ int main() {
     printf("8. Sold List\n");
     printf("0. Exit Program\n");
     printf("----------------------------------------------------------------------------------------------------\n\n");
-    printf("Enter your choice : ");
+    printf("Enter your choice :");
     scanf("%d",&n);
     switch (n) {
         case 1:
@@ -189,9 +189,6 @@ void readItemdata(){
         printf("ItemNumber\t\tName\t\tPrice\t\tquantity\n");
         printf("--------------------------------------------------------------------");
         while (fread(&s,sizeof (s),1,file)){
-
-            printf("\n%d\t\t%s\t\t%d\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity);
-
             printf("\n%d\t\t\t%s\t\t%d\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity);
             items=items+1;
             qunticount=qunticount+s.quantity;
@@ -224,11 +221,7 @@ void searchItem(){
         while (fread(&s,sizeof (s),1,file)){
             if(s.itemNumber == iNumber){
                 found=1;
-
-                printf("\n%s\t\t\t%d\t\t%d\t\t%d",s.itemName,s.itemNumber,s.itemsPrice,s.quantity);
-
                 printf("\n%d\t\t\t%s\t\t%d\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity);
-
             }
         }
         printf("\n--------------------------------------------------------------------\n");
@@ -336,7 +329,6 @@ void Buy(){
         printf("ItemNumber\t\tName\t\tPrice\t\tquantity\n");
         printf("--------------------------------------------------------------------");
         while (fread(&s,sizeof (s),1,file)){
-            printf("\n%d\t\t%s\t\t%d\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity);
             printf("\n%d\t\t\t%s\t\t%d\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity);
         }
         fclose(file);
@@ -428,7 +420,6 @@ void billCreater(int number,int qun){
     time_t t;
     t = time(NULL);
     struct tm tm = *localtime(&t);
-    printf("Current Date: %d-%d-%d", tm.tm_mday, tm.tm_mon+1, tm.tm_year+1900);
     file= fopen("itemdata.dat","r");
     file1= fopen("billdata.dat","a");
     if(file==NULL){
@@ -439,7 +430,6 @@ void billCreater(int number,int qun){
                 bill=qun*s.itemsPrice;
                 totalBill=totalBill+bill;
                 found=1;
-                printf("\n%s\t\t\t%d\t\t%d\t\t%d\t\t%d",s.itemName,s.itemNumber,s.itemsPrice,qun,bill);
                 printf("\n%s\t\t\t%d\t\t%d\t\t%d\t\t\t%d",s.itemName,s.itemNumber,s.itemsPrice,qun,bill);
                 updatequntity(s.itemNumber, qun);
                 strncpy(by.itemName, s.itemName, 20);
@@ -514,9 +504,6 @@ void displaybilldata(){
         printf("ItemNumber\t\tName\t\tPrice\t\tQuantity\tAmount\t\tDate");
         printf("\n-------------------------------------------------------------------------------------------------------");
         while (fread(&s,sizeof (s),1,file)){
-            printf("\n%d\t\t\t%s\t\t%d\t\t%d\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity,s.itembill);
-            sellingprice=sellingprice+s.itembill;
-
             printf("\n%d\t\t\t%s\t\t%d\t\t%d\t\t%d\t\t%d-%d-%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity,s.itembill,s.date,s.month,s.year);
             TotalSelling=TotalSelling+s.itembill;
             if(s.date == tm.tm_mday && s.month == tm.tm_mon+1 && s.year == tm.tm_year+1900){
