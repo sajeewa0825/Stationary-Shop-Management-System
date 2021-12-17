@@ -181,7 +181,7 @@ void appendItems(){
  * check the items number already store or not
  * if items found return 1
  * if items not found return 0
- * used itemdata.bat file
+ * used itemdata.dat file
  * */
 int itemsIdChecker(int id){
     FILE *file;
@@ -201,6 +201,14 @@ int itemsIdChecker(int id){
     return found;
 }
 
+
+/**
+ * display items table
+ * calculate Total items
+ * calculate Total inventory
+ * calculate Total value of goods
+ * used itemdata.dat file
+ * */
 void readItemdata(){
     FILE *file;
     struct items s;
@@ -229,6 +237,12 @@ void readItemdata(){
     main();
 }
 
+
+/**
+ * check the items number already store or not
+ * search items using item number
+ * used itemdata.dat file
+ * */
 void searchItem(){
     FILE *file;
     struct items s;
@@ -257,7 +271,11 @@ void searchItem(){
     main();
 }
 
-
+/**
+ * update item table without change item number
+ * used itemdata.dat file
+ * used temp.dat file
+ * */
 void updateItem(){
     FILE *file,*file1;
     struct items s;
@@ -300,7 +318,11 @@ void updateItem(){
     main();
 }
 
-
+/**
+ * delete item table row using item id
+ * used itemdata.dat file
+ * used temp.dat file
+ * */
 void deleteItem(){
     FILE *file,*file1;
     struct items s;
