@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include<conio.h>
-#include<time.h>
+#include <time.h>
+#include <stdlib.h>
 
 //declare functions
 void addItems();
@@ -57,48 +57,58 @@ int main() {
     printf("                             === WELCOME TO THE ABC ===                                       \n");
     printf("----------------------------------------------------------------------------------------------------\n");
     printf("1. Buy \n");
-    printf("2. Add Items\n");
-    printf("3. Items List\n");
-    printf("4. Search Items\n");
-    printf("5. Delete Items\n");
-    printf("6. Update Items\n");
-    printf("7. Delete All Items And Create New List\n");
-    printf("8. Sold List\n");
+    printf("2. Admin Panel\n");
     printf("0. Exit Program\n");
     printf("----------------------------------------------------------------------------------------------------\n\n");
     printf("Enter your choice :");
     scanf("%d",&n);
-    switch (n) {
-        case 1:
-            Buy();
-            break;
-        case 2:
-            appendItems();
-            break;
-        case 3:
-            readItemdata();
-            break;
-        case 4:
-            searchItem();
-            break;
-        case 5:
-            deleteItem();
-            break;
-        case 6:
-            updateItem();
-            break;
-        case 7:
-            addItems();
-            break;
-        case 8:
-            displaybilldata();
-            break;
-        case 0:
-            break;
-        default:
-            main();
-
+    if(n==1){
+        Buy();
+    } else if ( n == 2){
+        printf("1. Add Items\n");
+        printf("2. Items List\n");
+        printf("3. Search Items\n");
+        printf("4. Delete Items\n");
+        printf("5. Update Items\n");
+        printf("6. Delete All Items And Create New List\n");
+        printf("7. Sold List\n");
+        printf("0. Exit Program\n");
+        printf("GoTo Menu enter other number \n");
+        scanf("%d",&n);
+        switch (n) {
+            case 1:
+                appendItems();
+                break;
+            case 2:
+                readItemdata();
+                break;
+            case 3:
+                searchItem();
+                break;
+            case 4:
+                deleteItem();
+                break;
+            case 5:
+                updateItem();
+                break;
+            case 6:
+                addItems();
+                break;
+            case 7:
+                displaybilldata();
+                break;
+            case 0:
+                break;
+            default:
+                main();
+        }
+        } else if(n==0){
+            EXIT_FAILURE;
+        } else{
+        main();
     }
+
+
     return 0;
 }
 
@@ -110,7 +120,7 @@ int main() {
 void addItems(){
     FILE *file;
     int number = 0;
-    struct items structitems,s;
+    struct items structitems;
     file= fopen("itemdata.dat","w");
 
     if(file==NULL){
@@ -143,7 +153,7 @@ void addItems(){
 void appendItems(){
     FILE *file;
     int number = 0;
-    struct items structitems,s;
+    struct items structitems;
     file= fopen("itemdata.dat","a");
 
     if(file==NULL){
@@ -217,21 +227,21 @@ void readItemdata(){
     if(file==NULL){
         printf("open fail\n");
     } else{
-        printf("--------------------------------------------------------------------\n");
-        printf("ItemNumber\t\tName\t\tPrice\t\tquantity\n");
-        printf("--------------------------------------------------------------------");
+        printf("----------------------------------------------------------------------------------------------------\n");
+        printf("ItemNumber\t\tName\t\t\tPrice\t\t\tquantity\n");
+        printf("----------------------------------------------------------------------------------------------------");
         while (fread(&s,sizeof (s),1,file)){
-            printf("\n%d\t\t\t%s\t\t%d\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity);
+            printf("\n%d\t\t\t%s\t\t\t%d\t\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,s.quantity);
             items=items+1;
             qunticount=qunticount+s.quantity;
             pri=pri+(s.itemsPrice*s.quantity);
 
         }
-        printf("\n--------------------------------------------------------------------\n");
+        printf("\n----------------------------------------------------------------------------------------------------\n");
         printf("Total items %d\n",items);
         printf("Total inventory %d\n",qunticount);
         printf("Total value of goods Rs. %d",pri);
-        printf("\n--------------------------------------------------------------------\n");
+        printf("\n----------------------------------------------------------------------------------------------------\n");
     }
     fclose(file);
     main();
