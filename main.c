@@ -52,7 +52,7 @@ int totalBill=0;
  * main menu and selections functions
  * */
 int main() {
-    int n;
+    int n,n1;
     printf("\n\n");
     printf("                             === WELCOME TO THE ABC ===                                       \n");
     printf("----------------------------------------------------------------------------------------------------\n");
@@ -72,10 +72,10 @@ int main() {
         printf("5. Update Items\n");
         printf("6. Delete All Items And Create New List\n");
         printf("7. Sold List\n");
-        printf("0. Exit Program\n");
-        printf("GoTo Menu enter other number \n");
-        scanf("%d",&n);
-        switch (n) {
+        printf("0. Return main menu\n");
+        printf("\nEnter your choice :");
+        scanf("%d",&n1);
+        switch (n1) {
             case 1:
                 appendItems();
                 break;
@@ -98,7 +98,7 @@ int main() {
                 displaybilldata();
                 break;
             case 0:
-                break;
+                main();
             default:
                 main();
         }
@@ -160,7 +160,7 @@ void appendItems(){
         printf("open fail\n");
     } else{
         printf("--------------------------------------------------------------------\n");
-        printf("\nHow much item you add:");
+        printf("\nHow many items need to be added:");
         scanf("%d",&number);
         for (int i=0;i<number;++i){
             LOOP: printf("Enter item number:");
@@ -176,7 +176,7 @@ void appendItems(){
                 fwrite( &structitems,sizeof(structitems),1,file );
                 printf("\n-----Data Add successfully-----\n");
             } else{
-                printf("\n---Items number Already used please add other number and try again--\n\n");
+                printf("\n---Item number is Already used please add another number and try again--\n\n");
                 goto LOOP;
             }
         }
@@ -274,7 +274,7 @@ void searchItem(){
         }
         printf("\n--------------------------------------------------------------------\n");
         if(found==0){
-            printf("\n--- Not found items ! ---");
+            printf("\n--- Item not found ! ---");
         }
     }
     fclose(file);
@@ -312,7 +312,7 @@ void updateItem(){
         fclose(file);
         fclose(file1);
         if(found==0){
-            printf("\nNot found items");
+            printf("\nItem not found");
         } else{
             file1= fopen("temp.dat","r");
             file= fopen("itemdata.dat","w");
@@ -355,7 +355,7 @@ void deleteItem(){
         fclose(file);
         fclose(file1);
         if(found==0){
-            printf("\n--- Not found item !---\n");
+            printf("\n--- Item not found !---\n");
         } else{
             file1= fopen("temp.dat","r");
             file= fopen("itemdata.dat","w");
@@ -486,7 +486,7 @@ void billCreater(int number,int qun){
                 bill=qun*s.itemsPrice;
                 totalBill=totalBill+bill;
                 found=1;
-                printf("\n%s\t\t\t%d\t\t%d\t\t%d\t\t\t%d",s.itemName,s.itemNumber,s.itemsPrice,qun,bill);
+                printf("\n%d\t\t\t%s\t\t%d\t\t%d\t\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,qun,bill);
                 updatequntity(s.itemNumber, qun);
                 strncpy(by.itemName, s.itemName, 20);
                 by.itemNumber = s.itemNumber;
@@ -500,7 +500,7 @@ void billCreater(int number,int qun){
             }
         }
         if(found==0){
-            printf("\nNot found items");
+            printf("\nItem not found");
         }
     }
     fclose(file);
@@ -526,7 +526,7 @@ void updatequntity(int number, int quntity ){
         fclose(file);
         fclose(file1);
         if(found==0){
-            printf("\nNot found items and not Update");
+            printf("\nitem not found and not Update");
         } else{
             file1= fopen("temp.dat","r");
             file= fopen("itemdata.dat","w");
