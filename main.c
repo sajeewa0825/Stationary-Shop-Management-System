@@ -114,8 +114,7 @@ int main() {
 
 
 /**
- * add items for database
- * all delete and write
+ * delete all items data and add new items
  * */
 void addItems(){
     FILE *file;
@@ -214,10 +213,6 @@ int itemsIdChecker(int id){
 
 /**
  * display items table
- * calculate Total items
- * calculate Total inventory
- * calculate Total value of goods
- * used itemdata.dat file
  * */
 void readItemdata(){
     FILE *file;
@@ -289,7 +284,7 @@ void searchItem(){
 void updateItem(){
     FILE *file,*file1;
     struct items s;
-    int iNumber,found=0;
+    int iNumber,found=0,n;
     file= fopen("itemdata.dat","r");
     file1= fopen("temp.dat","w");
     if(file==NULL){
@@ -300,12 +295,23 @@ void updateItem(){
         while (fread(&s,sizeof (s),1,file)){
             if(s.itemNumber == iNumber){
                 found=1;
-                printf("Enter item name:");
-                scanf(" %s",&s.itemName);
-                printf("Enter item price:");
-                scanf(" %d",&s.itemsPrice);
-                printf("Enter item quantity:");
-                scanf(" %d",&s.quantity);
+                Loop: printf("1. Update Item name\n"
+                             "2. Update Item price\n"
+                             "3. Update Item quantity\n");
+                scanf("%d",&n);
+                if(1==n){
+                    printf("Enter item name:");
+                    scanf(" %s",&s.itemName);
+                } else if (2 == n){
+                    printf("Enter item price:");
+                    scanf(" %d",&s.itemsPrice);
+                } else if ( 3== n){
+                    printf("Enter item quantity:");
+                    scanf(" %d",&s.quantity);
+                } else{
+                    printf(" wrong input \n");
+                    goto Loop;
+                }
             }
             fwrite( &s,sizeof(s),1,file1 );
         }
@@ -544,7 +550,6 @@ void updatequntity(int number, int quntity ){
 void displaybilldata(){
     FILE *file;
     struct buy s;
-    int sellingprice;
     int TotalSelling=0,daySelling=0;
 
     time_t t;
