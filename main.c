@@ -5,16 +5,16 @@
 
 //declare functions
 void addItems();
-void readItemdata();
+void readItemData();
 void searchItem();
 void appendItems();
 void updateItem();
 void deleteItem();
 void Buy();
-void calculaterBill();
-void updatequntity(int number, int quntity );
-void billCreater(int number,int qun);
-void displaybilldata();
+void calculateBill();
+void updateQuantity(int number, int quntity );
+void billCreate(int number,int qun);
+void displayBillData();
 int itemsIdChecker(int id);
 int checkItemQuantity(int id, int qun);
 
@@ -28,7 +28,7 @@ struct items{
 
 //buy items data store struct
 struct buy{
-    char itemName[20];
+    char itemName[10];
     int itemNumber;
     int itemsPrice;
     int quantity;
@@ -80,7 +80,7 @@ int main() {
                 appendItems();
                 break;
             case 2:
-                readItemdata();
+                readItemData();
                 break;
             case 3:
                 searchItem();
@@ -95,10 +95,8 @@ int main() {
                 addItems();
                 break;
             case 7:
-                displaybilldata();
+                displayBillData();
                 break;
-            case 0:
-                main();
             default:
                 main();
         }
@@ -137,10 +135,9 @@ void addItems(){
             printf("Enter item quantity:");
             scanf(" %d",&structitems.quantity);
             fwrite( &structitems,sizeof(structitems),1,file );
+            printf("\n");
         }
-
     }
-
     fclose(file);
     main();
 }
@@ -164,7 +161,10 @@ void appendItems(){
         for (int i=0;i<number;++i){
             LOOP: printf("Enter item number:");
             scanf(" %d",&structitems.itemNumber);
+
+            /// call itemsIdChecker() function user enter item number check
             int check =itemsIdChecker(structitems.itemNumber);
+
             if(check == 0){
                 printf("Enter item name:");
                 scanf(" %s",&structitems.itemName);
@@ -175,7 +175,8 @@ void appendItems(){
                 fwrite( &structitems,sizeof(structitems),1,file );
                 printf("\n-----Data Add successfully-----\n");
             } else{
-                printf("\n---Item number is Already used please add another number and try again--\n\n");
+                printf("\n---Item number is Already used please add another number and try again---\n");
+                printf("---Last item number is %d---\n\n",check);
                 goto LOOP;
             }
         }
@@ -188,23 +189,29 @@ void appendItems(){
 
 /**
  * check the items number already store or not
- * if items found return 1
+ * parameter-- item number
+ * if items found return last item number
  * if items not found return 0
  * used itemdata.dat file
  * */
 int itemsIdChecker(int id){
     FILE *file;
     struct items s;
-    int found=0;
+    int found=0,lastNumber=0;
     file= fopen("itemdata.dat","r");
     if(file==NULL){
-        printf("open fail\n");
+        printf("file open fail\n");
     } else{
         while (fread(&s,sizeof (s),1,file)){
             if(s.itemNumber == id){
                 found = 1;
             }
+            lastNumber = s.itemNumber;
         }
+    }
+
+    if(found ==1){
+        found = lastNumber;
     }
     fclose(file);
     return found;
@@ -214,7 +221,8 @@ int itemsIdChecker(int id){
 /**
  * display items table
  * */
-void readItemdata(){
+void readItemData(){
+    printf("\n");
     FILE *file;
     struct items s;
     int items=0,qunticount=0,pri=0;
@@ -377,6 +385,10 @@ void deleteItem(){
     main();
 }
 
+/**
+ * print item list
+ *
+ **/
 void Buy(){
     FILE *file,*file1;
     int check=1;
@@ -385,7 +397,7 @@ void Buy(){
     file= fopen("itemdata.dat","r");
     file1= fopen("tempbuy.dat","w");
     if(file==NULL &&  file1 == NULL){
-        printf("open fail\n");
+        printf("file open fail\n");
     } else{
         printf("\n--------------------------------------------------------------------\n");
         printf("ItemNumber\t\tName\t\tPrice\t\tquantity\n");
@@ -402,8 +414,12 @@ void Buy(){
             if (check1 == 1){
                 Loop1: printf("Enter item quantity \n");
                 scanf("%d",&tb.quantity);
+
+                /// call checkItemQuantity() function, argument -- item number and quantity
                 int check2 = checkItemQuantity(tb.itemNumber,tb.quantity);
+
                 if(check2 == 1){
+                    /// write temporary quantity and item number
                     fwrite( &tb,sizeof(tb),1,file1);
                 } else if(check2 == 2){
                     printf("--- This item out of stock---\n\n");
@@ -412,7 +428,7 @@ void Buy(){
                     printf("--- Your Request quantity Not available ! Try again---\n\n");
                     goto Loop1;
                 }
-                Loop3:  printf("\nClose enter 0\n" "continue enter 1\n");
+                Loop3:  printf("\n0 Close enter\n" "1 continue enter\n");
                 scanf("%d",&check);
                 if(check != 0 && check !=1 ){
                     goto Loop3;
@@ -425,17 +441,24 @@ void Buy(){
         fclose(file1);
 
     }
-    calculaterBill();
+    calculateBill(); /// call this function for print bill
     main();
 }
 
+/**
+ * check items stock
+ * parameter -- item number and quantity
+ * return check = 0 -- item number not found
+ * return check = 1 -- items less than request quantity
+ * return check = 2 -- item out of stock
+ **/
 int checkItemQuantity(int id, int qun){
     FILE *file;
     struct items s;
     int check=0;
     file= fopen("itemdata.dat","r");
     if(file==NULL){
-        printf("open fail\n");
+        printf("file open fail\n");
     } else{
         while (fread(&s,sizeof (s),1,file)){
             if(s.itemNumber == id){
@@ -453,7 +476,12 @@ int checkItemQuantity(int id, int qun){
     return check;
 }
 
-void calculaterBill(){
+
+/**
+ * print row-- Name, price, Amount
+ * print - Total Rs.
+ **/
+void calculateBill(){
     FILE *file;
     struct tempbuy tb;
     time_t tm;
@@ -465,7 +493,7 @@ void calculaterBill(){
     printf("----------------------------------------------------------------------------------------------------\n");
     printf("ItemNumber\t\tName\t\tPrice\t\tQuantity\t\tAmount");
     while (fread(&tb,sizeof (tb),1,file)){
-        billCreater(tb.itemNumber,tb.quantity);
+        billCreate(tb.itemNumber,tb.quantity);
     }
     printf("\n----------------------------------------------------------------------------------------------------\n");
     printf("TOTAL Rs. %d\n",totalBill);
@@ -474,18 +502,28 @@ void calculaterBill(){
     fclose(file);
 }
 
-void billCreater(int number,int qun){
+
+/**
+ * bill create
+ * parameter --- item number and quantity from calculateBill() function
+ * print item number,name,price,quantity
+ * write bill data file
+ * **/
+void billCreate(int number,int qun){
     FILE *file,*file1;
     struct items s;
     struct buy by;
     int found=0,bill;
+
     time_t t;
     t = time(NULL);
     struct tm tm = *localtime(&t);
+
     file= fopen("itemdata.dat","r");
     file1= fopen("billdata.dat","a");
-    if(file==NULL){
-        printf("open fail\n");
+
+    if(file==NULL && file1==NULL){
+        printf("file open fail\n");
     } else{
         while (fread(&s,sizeof (s),1,file)){
             if(s.itemNumber == number){
@@ -493,7 +531,10 @@ void billCreater(int number,int qun){
                 totalBill=totalBill+bill;
                 found=1;
                 printf("\n%d\t\t\t%s\t\t%d\t\t%d\t\t\t%d",s.itemNumber,s.itemName,s.itemsPrice,qun,bill);
-                updatequntity(s.itemNumber, qun);
+
+                /// call updateQuantity functions, argument -- item number, quantity
+                updateQuantity(s.itemNumber, qun);
+
                 strncpy(by.itemName, s.itemName, 20);
                 by.itemNumber = s.itemNumber;
                 by.quantity = qun;
@@ -502,6 +543,7 @@ void billCreater(int number,int qun){
                 by.date=tm.tm_mday;
                 by.month=tm.tm_mon+1;
                 by.year=tm.tm_year+1900;
+
                 fwrite( &by,sizeof(by),1,file1);
             }
         }
@@ -513,14 +555,19 @@ void billCreater(int number,int qun){
     fclose(file1);
 }
 
-void updatequntity(int number, int quntity ){
+
+/**
+ * update quantity for item data table
+ * parameter --- item number and quantity from billCreate() function
+ * **/
+void updateQuantity(int number, int quntity ){
     FILE *file,*file1;
     struct items s;
     int found=0;
     file= fopen("itemdata.dat","r");
     file1= fopen("temp.dat","w");
     if(file==NULL){
-        printf("open fail\n");
+        printf("file open fail\n");
     } else{
         while (fread(&s,sizeof (s),1,file)){
             if(s.itemNumber == number){
@@ -547,7 +594,13 @@ void updatequntity(int number, int quntity ){
     }
 }
 
-void displaybilldata(){
+
+/**
+ * display bill table
+ * display Total Selling Rs
+ * display Today's Selling Rs
+ **/
+void displayBillData(){
     FILE *file;
     struct buy s;
     int TotalSelling=0,daySelling=0;
@@ -558,7 +611,7 @@ void displaybilldata(){
 
     file= fopen("billdata.dat","r");
     if(file==NULL){
-        printf("open fail\n");
+        printf("file open fail\n");
     } else{
         printf("\n--- Total Selling Table --");
         printf("\n-------------------------------------------------------------------------------------------------------\n");
