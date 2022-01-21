@@ -387,7 +387,7 @@ void deleteItem(){
 
 /**
  * print item list
- *
+ * buy items
  **/
 void Buy(){
     FILE *file,*file1;
