@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 //declare functions
-void addItems();
+void deleteAllAndAddItems();
 void readItemData();
 void searchItem();
 void appendItems();
@@ -92,7 +92,7 @@ int main() {
                 updateItem();
                 break;
             case 6:
-                addItems();
+                deleteAllAndAddItems();
                 break;
             case 7:
                 displayBillData();
@@ -114,7 +114,7 @@ int main() {
 /**
  * delete all items data and add new items
  * */
-void addItems(){
+void deleteAllAndAddItems(){
     FILE *file;
     int number = 0;
     struct items structitems;
@@ -153,7 +153,7 @@ void appendItems(){
     file= fopen("itemdata.dat","a");
 
     if(file==NULL){
-        printf("open fail\n");
+        printf("file open fail\n");
     } else{
         printf("--------------------------------------------------------------------\n");
         printf("\nHow many items need to be added:");
@@ -189,14 +189,14 @@ void appendItems(){
 /**
  * check the items number already store or not
  * parameter-- item number
- * if items found return last item number
+ * if items found return 1
  * if items not found return 0
  * used itemdata.dat file
  * */
 int itemsIdChecker(int id){
     FILE *file;
     struct items s;
-    int found=0,lastNumber=0;
+    int found=0;
     file= fopen("itemdata.dat","r");
     if(file==NULL){
         printf("file open fail\n");
@@ -223,7 +223,7 @@ void readItemData(){
     int items=0,qunticount=0,pri=0;
     file= fopen("itemdata.dat","r");
     if(file==NULL){
-        printf("open fail\n");
+        printf("file open fail\n");
     } else{
         printf("----------------------------------------------------------------------------------------------------\n");
         printf("ItemNumber\t\tName\t\t\tPrice\t\t\tquantity\n");
@@ -247,7 +247,6 @@ void readItemData(){
 
 
 /**
- * check the items number already store or not
  * search items using item number
  * used itemdata.dat file
  * */
@@ -257,7 +256,7 @@ void searchItem(){
     int iNumber,found=0;
     file= fopen("itemdata.dat","r");
     if(file==NULL){
-        printf("open fail\n");
+        printf("file open fail\n");
     } else{
         printf("Enter item number:");
         scanf("%d",&iNumber);
@@ -291,7 +290,7 @@ void updateItem(){
     file= fopen("itemdata.dat","r");
     file1= fopen("temp.dat","w");
     if(file==NULL){
-        printf("open fail\n");
+        printf("file open fail\n");
     } else{
         printf("Enter Update item number:");
         scanf("%d",&iNumber);
@@ -349,7 +348,7 @@ void deleteItem(){
     file= fopen("itemdata.dat","r");
     file1= fopen("temp.dat","w");
     if(file==NULL){
-        printf("open fail\n");
+        printf("file open fail\n");
     } else{
         printf("\n--------------------------------------------------------------------\n");
         printf("Enter delete item number:");
