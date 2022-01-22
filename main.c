@@ -175,8 +175,7 @@ void appendItems(){
                 fwrite( &structitems,sizeof(structitems),1,file );
                 printf("\n-----Data Add successfully-----\n");
             } else{
-                printf("\n---Item number is Already used please add another number and try again---\n");
-                printf("---Last item number is %d---\n\n",check);
+                printf("\n---Item number is Already used please add another number and try again---\n\n");
                 goto LOOP;
             }
         }
@@ -206,13 +205,9 @@ int itemsIdChecker(int id){
             if(s.itemNumber == id){
                 found = 1;
             }
-            lastNumber = s.itemNumber;
         }
     }
 
-    if(found ==1){
-        found = lastNumber;
-    }
     fclose(file);
     return found;
 }
